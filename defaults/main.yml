@@ -10,3 +10,5 @@ signed_ssh_hostnames:
 signed_ssh_valid_time: 87600h
 signed_ssh_nuke_existing_sigs: false
 ansible_hashi_vault_url: https://vault.wkharmon.com:8200
+vault_signer_path: ssh-host-signer/sign/server
+vault_signer_approle_path: auth/approle/role/ssh-host-signer

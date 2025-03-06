@@ -1,6 +1,12 @@
 ---
 #  For re-signing keys when more names have been added
 #  --extra-vars 'signed_ssh_nuke_existing_sigs=true'
+- name: Log into the vault using our approle
+  include_role:
+    name: vault_login
+  vars:
+    approle_path: "{{vault_signer_approle_path}}"
+
 - name: Nuke existing sigs
   file:
     path: "{{item}}-cert.pub"
