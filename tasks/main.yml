@@ -19,9 +19,9 @@
   tags:
     - ssh_signed_hostkeys
 
-- include: check_cert.yml signed_ssh_keyfile="{{signed_ssh_key_stat.item}}"
+- include: check_cert.yml signed_ssh_keyfile="{{signed_ssh_stat_keyfile.item}}"
   when: signed_ssh_key_stat is defined and signed_ssh_key_stat.stat.exists
-  with_items: "{{signed_ssh_key_stat.results}}"
+  with_items: "{{signed_ssh_stat_keyfile.results}}"
   loop_control:
     loop_var: signed_ssh_stat_keyfile
   tags:
