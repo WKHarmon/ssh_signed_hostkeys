@@ -13,7 +13,7 @@
     url: "{{ansible_hashi_vault_url}}"
     auth_method: token
     token: "{{ login_data.login.auth.client_token }}"
-    path: ssh-host-signer/sign/server
+    path: "{{vault_signer_path}}"
     data:
       cert_type: host
       ttl: "{{signed_ssh_valid_time}}"
