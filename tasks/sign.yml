@@ -1,26 +1,38 @@
 ---
+- name: Read contents of key
+  ansible.builtin.slurp:
+    src: "{{signed_ssh_certfile.rstrip('-cert.pub')}}.pub"
+  register: signed_ssh_original_public_key_b64
+
+- name: Decode key into a string
+  set_fact:
+    signed_ssh_original_public_key: "{{signed_ssh_original_public_key_b64['content'] | b64decode}}"
+
 - name: Sign key
   community.hashi_vault.vault_write:
+    url: https://vault.wkharmon.com:8200
     auth_method: token
     token: "{{ login_data.login.auth.client_token }}"
     path: ssh-host-signer/sign/server
     data:
       cert_type: host
       ttl: "{{signed_ssh_valid_time}}"
-      allowed_domains: "{{','.join(signed_ssh_hostnames)}}"
-      public_key: "{{ lookup('ansible.builtin.file', {{signed_ssh_certfile.rstrip('-cert.pub')}}) }}"
-    register: signed_key
+      valid_principals: "{{','.join(signed_ssh_hostnames)}}"
+      public_key: "{{signed_ssh_original_public_key}}"
+  register: signed_key
   tags:
     - ssh_signed_hostkeys
 
 - name: Write key to file
+  become: true
   ansible.builtin.copy:
-    content: "{{signed_key}}"
+    content: "{{signed_key.data.data.signed_key}}"
     dest: "{{signed_ssh_certfile}}"
   tags:
     - ssh_signed_hostkeys
 
 - name: File permissions
+  become: true
   file:
     path: "{{signed_ssh_certfile}}"
     owner: root
@@ -30,17 +42,11 @@
     - ssh_signed_hostkeys
 
 - name: Add cert to sshd_config
+  become: true
   lineinfile:
     path: /etc/ssh/sshd_config
     line: "HostCertificate {{signed_ssh_certfile}}"
     regexp: "HostCertificate {{signed_ssh_certfile}}"
   notify: Restart SSH
-  tags:
-    - ssh_signed_hostkeys
-
-- name: Remove signing cert
-  file:
-    path: "{{ssh_signed_tempfile.path}}"
-    state: absent
   tags:
     - ssh_signed_hostkeys
