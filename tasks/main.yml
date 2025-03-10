@@ -8,6 +8,7 @@
     approle_path: "{{vault_signer_approle_path}}"
 
 - name: Nuke existing sigs
+  become: true
   file:
     path: "{{item}}-cert.pub"
     state: absent
