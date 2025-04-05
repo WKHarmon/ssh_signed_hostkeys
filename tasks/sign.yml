@@ -3,10 +3,14 @@
   ansible.builtin.slurp:
     src: "{{signed_ssh_certfile.rstrip('-cert.pub')}}.pub"
   register: signed_ssh_original_public_key_b64
+  tags:
+    - ssh_signed_hostkeys
 
 - name: Decode key into a string
   set_fact:
     signed_ssh_original_public_key: "{{signed_ssh_original_public_key_b64['content'] | b64decode}}"
+  tags:
+    - ssh_signed_hostkeys
 
 - name: Sign key
   community.hashi_vault.vault_write:

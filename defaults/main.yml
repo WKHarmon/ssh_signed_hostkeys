@@ -7,6 +7,7 @@ signed_ssh_keyfiles:
 signed_ssh_hostnames:
   - "{{ansible_fqdn.split('.')[0]}}.tailc05c6.ts.net"
   - "{{ansible_fqdn.split('.')[0]}}.wkharmon.com"
+  - "{{ansible_fqdn.split('.')[0]}}.local"
 signed_ssh_valid_time: 87600h
 signed_ssh_nuke_existing_sigs: false
 ansible_hashi_vault_url: https://vault.wkharmon.com:8200
